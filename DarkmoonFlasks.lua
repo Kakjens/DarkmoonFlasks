@@ -353,6 +353,7 @@ local function darkmoon_frame_create()
 			Ucount = Ucount + 1
 		end
 		--print(itemname,itemName)
+		if not _G["DarkmoonDButton"..itemname] then
 		local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonDButton"..itemname, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate");
 			DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
 			DarkmoonFlasksDButton:ClearAllPoints()
@@ -384,32 +385,46 @@ local function darkmoon_frame_create()
 			--print("onleave")
 			GameTooltip:Hide()
 		end
+		DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSD = DarkmoonFlasksDButton:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
+			--DarkmoonFlasksDButtonFSD:Hide()
+			--DarkmoonFlasksDButtonFSD:ClearAllPoints()
+			DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSD:SetPoint("BOTTOMRIGHT", DarkmoonFlasksDButton)
+			DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSD:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
+			--DarkmoonFlasksDButtonFSD:SetShadowOffset(1, -1)--Optional
+			DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSD:SetTextColor(1, 1, 1);
+		DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSU = DarkmoonFlasksDButton:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
+			DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSU:SetPoint("TOPRIGHT", DarkmoonFlasksDButton)
+			DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSU:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
+			--DarkmoonFlasksDButtonFSU:SetShadowOffset(1, -1)--Optional
+			DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSU:SetTextColor(1, 1, 1);
 		DarkmoonFlasksDButton:Hide()
 		DarkmoonFlasksDButton:SetScript("OnEnter", OnEnter)
 		DarkmoonFlasksDButton:SetScript("OnLeave", OnLeave)
 		_G["DarkmoonDButton"..itemname] = DarkmoonFlasksDButton
+		end
 	end
 end
 
 local DarkmoonFlasksShowHideButtontooltipText
-local flask_State = false
+local flask_State
 local function set_showhide__state(state)
 	if state then
-		DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
-		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
-	else
 		DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
+	else
+		DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
+		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
 	end
+	flask_State = not state
 end
 local function toggle_showhide__state()
 	--print(flask_State,"flask state")
 	set_showhide__state(flask_State)
-	flask_State = not flask_State
+	--flask_State = not flask_State
 end
 
 local updater = CreateFrame("Frame")
-
+local change = true
 local function darkmoon_frame_update()
 	if InCombatLockdown() then
 		updater:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -417,7 +432,9 @@ local function darkmoon_frame_update()
 	else
 		if frames_need then darkmoon_frame_create() end
 		darkmoon_reseter()
-		toggle_showhide__state()
+		if change then toggle_showhide__state() end
+		change = true
+		--set_showhide__state(false)
 		--DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
 		--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
 		--flask_State = true
@@ -445,30 +462,12 @@ local function darkmoon_frame_update()
 						local itemcount = GetItemCount(name, false, false)
 						--print(name, itemcount)
 						local itemcount_bank = GetItemCount(name, true, false)
-						local DarkmoonFlasksDButtonFSD = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
-						--DarkmoonFlasksDButtonFSD:Hide()
-						--DarkmoonFlasksDButtonFSD:ClearAllPoints()
-						DarkmoonFlasksDButtonFSD:SetPoint("BOTTOMRIGHT", something)
-						DarkmoonFlasksDButtonFSD:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
-						--DarkmoonFlasksDButtonFSD:SetShadowOffset(1, -1)--Optional
-						DarkmoonFlasksDButtonFSD:SetTextColor(1, 1, 1);
-						DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
-						--DarkmoonFlasksDButtonFSD:Show()
-						--local DarkmoonFlasksDButtonFSD = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
-						--DarkmoonFlasksDButtonFSD:Hide()
-						--DarkmoonFlasksDButtonFSD:SetPoint("BOTTOMRIGHT", something)
-						--DarkmoonFlasksDButtonFSD:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
-						--DarkmoonFlasksDButtonFSD:SetShadowOffset(1, -1)--Optional
-						--DarkmoonFlasksDButtonFSD:SetTextColor(1, 1, 1);
-						--DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
-						--DarkmoonFlasksDButtonFSD:Show()
+						something.DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
+						something.DarkmoonFlasksDButtonFSD:Show()
+						something.DarkmoonFlasksDButtonFSU:Hide()
 						if itemcount ~= itemcount_bank then
-							local DarkmoonFlasksDButtonFSU = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
-							DarkmoonFlasksDButtonFSU:SetPoint("TOPRIGHT", something)
-							DarkmoonFlasksDButtonFSU:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
-							--DarkmoonFlasksDButtonFSU:SetShadowOffset(1, -1)--Optional
-							DarkmoonFlasksDButtonFSU:SetTextColor(1, 1, 1);
-							DarkmoonFlasksDButtonFSU:SetFormattedText("%.0f", itemcount_bank)
+							something.DarkmoonFlasksDButtonFSU:SetFormattedText("%.0f", itemcount_bank)
+							something.DarkmoonFlasksDButtonFSU:Show()
 						end
 						something:SetScript("OnEnter", real_OnEnter)
 						something:Show()
@@ -483,7 +482,10 @@ end
 --updater:RegisterEvent("LOOT_CLOSED")
 updater:RegisterEvent("BAG_UPDATE")
 updater:SetScript("OnEvent", function(self, event,arg1)
-	if flask_State then darkmoon_frame_update() end
+	if flask_State then
+		change = false
+		darkmoon_frame_update()
+	end
 	if event == "PLAYER_REGEN_ENABLED" then self:UnregisterEvent(event) end
 end)				
 
@@ -511,7 +513,7 @@ local DarkmoonFlasksShowHideButton = CreateFrame("Button", "DarkmoonFlasksShowHi
 	DarkmoonFlasksShowHideButton:SetScript("OnLeave", DarkmoonFlasksShowHideButton_OnLeave)
 DarkmoonFlasksShowHideButton:SetScript("OnEvent", function(self, event, arg1)
 	if arg1 == addonname then
-		set_showhide__state(false)
+		set_showhide__state(true)
 		--DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 		--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 	end
