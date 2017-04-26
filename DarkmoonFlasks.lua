@@ -480,7 +480,7 @@ end
 --updater:RegisterEvent("LOOT_CLOSED")
 updater:RegisterEvent("BAG_UPDATE")
 updater:SetScript("OnEvent", function(self, event,arg1)
-	darkmoon_frame_update()
+	if flask_State then darkmoon_frame_update() end
 	if event == "PLAYER_REGEN_ENABLED" then self:UnregisterEvent(event) end
 end)				
 
