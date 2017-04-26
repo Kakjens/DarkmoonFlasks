@@ -393,15 +393,18 @@ end
 
 local DarkmoonFlasksShowHideButtontooltipText
 local flask_State = false
- local function toggle_showhide__state()
-	--print(flask_State)
-	if flask_State then
+local function set_showhide__state(state)
+	if state then
 		DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
 		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
 	else
 		DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 	end
+end
+local function toggle_showhide__state()
+	--print(flask_State,"flask state")
+	set_showhide__state(flask_State)
 	flask_State = not flask_State
 end
 
@@ -440,7 +443,7 @@ local function darkmoon_frame_update()
 							GameTooltip:Show()
 						end
 						local itemcount = GetItemCount(name, false, false)
-						print(name, itemcount)
+						--print(name, itemcount)
 						local itemcount_bank = GetItemCount(name, true, false)
 						local DarkmoonFlasksDButtonFSD = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
 						--DarkmoonFlasksDButtonFSD:Hide()
@@ -508,7 +511,7 @@ local DarkmoonFlasksShowHideButton = CreateFrame("Button", "DarkmoonFlasksShowHi
 	DarkmoonFlasksShowHideButton:SetScript("OnLeave", DarkmoonFlasksShowHideButton_OnLeave)
 DarkmoonFlasksShowHideButton:SetScript("OnEvent", function(self, event, arg1)
 	if arg1 == addonname then
-		toggle_showhide__state()
+		set_showhide__state(false)
 		--DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 		--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 	end
@@ -516,7 +519,7 @@ end)
 
 DarkmoonFlasksShowHideButton:SetScript("OnClick", function(self, button, up)
 	--print(flask_State,"flask_State on click")
-	if not flask_State then
+	if flask_State then
 		if InCombatLockdown() then 
 			print("can't hide during combat")
 		else
@@ -528,6 +531,7 @@ DarkmoonFlasksShowHideButton:SetScript("OnClick", function(self, button, up)
 			--print("Hide")
 		end
 	else
+		--print("onclick")
 		darkmoon_frame_update()
 	end
 	DarkmoonFlasksShowHideButton_OnEnter()
