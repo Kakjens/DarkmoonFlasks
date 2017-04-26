@@ -1,4 +1,7 @@
 --SavedVariables Setup -- no need for saved variables
+-- fix for total seling- maybe just extra line with sell all
+-- in game tooltip add extra info un brackets - how many there are those items, icluding bank
+-- additional addon for potions - if there are no mana and healing potions, don't create frame for them
 local addonname="DarkmoonFlasks"
 
 local function reset_position()
@@ -255,40 +258,40 @@ end
 
 local darkmoonflasks = {}
 darkmoonflasks = {
-[1]="Darkmoon Draught of Supremacy",
-[2]="Darkmoon Tincture of Supremacy",
-[3]="Darkmoon Draught of Flexibility",
-[4]="Darkmoon Tincture of Flexibility",
-[5]="Darkmoon Draught of Precision",
-[6]="Darkmoon Tincture of Precision",
-[7]="Darkmoon Draught of Divergence",
-[8]="Darkmoon Tincture of Divergence",
-[9]="Darkmoon Draught of Alacrity",
-[10]="Darkmoon Tincture of Alacrity",
-[11]="Darkmoon Draught of Deftness",
-[12]="Darkmoon Tincture of Deftness",
-[13]="Darkmoon Draught of Deflection",
-[14]="Darkmoon Tincture of Deflection",
-[15]="Darkmoon Draught of Defense",
-[16]="Darkmoon Tincture of Defense",
+[1] = "Darkmoon Draught of Supremacy",
+[2] = "Darkmoon Tincture of Supremacy",
+[3] = "Darkmoon Draught of Flexibility",
+[4] = "Darkmoon Tincture of Flexibility",
+[5] = "Darkmoon Draught of Precision",
+[6] = "Darkmoon Tincture of Precision",
+[7] = "Darkmoon Draught of Divergence",
+[8] = "Darkmoon Tincture of Divergence",
+[9] = "Darkmoon Draught of Alacrity",
+[10] = "Darkmoon Tincture of Alacrity",
+[11] = "Darkmoon Draught of Deftness",
+[12] = "Darkmoon Tincture of Deftness",
+[13] = "Darkmoon Draught of Deflection",
+[14] = "Darkmoon Tincture of Deflection",
+[15] = "Darkmoon Draught of Defense",
+[16] = "Darkmoon Tincture of Defense",
 }
 
 local potions = {}
 potions = {
-[1]="Minor Healing Potion",
-[2]="Lesser Healing Potion",
-[3]="Healing Potion",
-[4]="Greater Healing Potion",
-[5]="Superior Healing Potion",
-[6]="Major Healing Potion",
-[7]="Super Healing Potion",
-[8]="Minor Mana Potion",
-[9]="Lesser Mana Potion",
-[10]="Mana Potion",
-[11]="Greater Mana Potion",
-[12]="Superior Mana Potion",
-[13]="Major Mana Potion",
-[14]="Super Mana Potion",
+[1] = "Minor Healing Potion",
+[2] = "Lesser Healing Potion",
+[3] = "Healing Potion",
+[4] = "Greater Healing Potion",
+[5] = "Superior Healing Potion",
+[6] = "Major Healing Potion",
+[7] = "Super Healing Potion",
+[8] = "Minor Mana Potion",
+[9] = "Lesser Mana Potion",
+[10] = "Mana Potion",
+[11] = "Greater Mana Potion",
+[12] = "Superior Mana Potion",
+[13] = "Major Mana Potion",
+[14] = "Super Mana Potion",
 }
 
 local string0, string1, string2
@@ -311,7 +314,7 @@ local numIte = #itemset
 local function darkmoon_reseter()
 	--print("reseting frames")
 	--pairs don't preserve order
-	for index =1,numIte,1 do
+	for index =1, numIte, 1 do
 		local itemname = itemset[index]
 		--print(index,itemname,"loop")
 		local something = _G["DarkmoonDButton"..itemname]
@@ -325,67 +328,67 @@ local function darkmoon_frame_create()
 	--Most probably darkmoon_frame_create and dosomething will need to be merged because GetItemInfo gets info only from previosuly seen items
 	--Easy fix might be commenting out frames_need = false in next line. A check if ~_G["DarkmoonDButton"..itemname] then before creation of frame could also be involved.
 	--Would prefer to use seperate fucntions for creation and update
-	frames_need = false
+	--frames_need = false
 	--print("creating frames")
 	local Rcount = 0
 	local Ucount = 0
 	local w = 36
+	local w1 = w * 1.1
 	local h = 36
+	local h1 = h * 1.1
 	local x = 0
 	local y = 0
-		for index =1,numIte,1 do
-			local itemname = itemset[index]
-			local _, itemLink, _,_,_,_,_,_,_,itemTexture,_ = GetItemInfo(itemname)
-			--local texture = select(10,GetItemInfo(itemname))
-			if string.find(itemname,string1) then
-					x = (Rcount*w)*1.1
-					y = h*1.1
-					Rcount = Rcount+1
-				end
-				if string.find(itemname,string2) then
-					x = (Ucount*w)*1.1
-					y = 0
-					Ucount = Ucount+1
-				end
-				--print(itemname,itemName)
-					local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonDButton"..itemname, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate");
-			
-					DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
-					DarkmoonFlasksDButton:ClearAllPoints()
-					DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT",x+20,y+52)
-					DarkmoonFlasksDButton:SetSize(w,h)
-					DarkmoonFlasksDButton:SetNormalTexture(itemTexture)
-					DarkmoonFlasksDButton:SetPushedTexture(itemTexture)
-					DarkmoonFlasksDButton:SetHighlightTexture(itemTexture)
-					DarkmoonFlasksDButton:SetAttribute("type","item")
-					DarkmoonFlasksDButton:SetAttribute("item",itemname)
-					--DarkmoonFlasksDButton:HookScript("OnMouseUp", function(self) 
-						--print(name)
-						--self:SetScale(1)
-						--print("what is this?")
-					--end)
+	for index = 1, numIte, 1 do
+		local itemname = itemset[index]
+		local _, itemLink, _,_,_,_,_,_,_,itemTexture,_ = GetItemInfo(itemname)
+		--local texture = select(10,GetItemInfo(itemname))
+		if string.find(itemname,string1) then
+			x = Rcount * w1
+			y = h1
+			Rcount = Rcount+1
+		end
+		if string.find(itemname,string2) then
+			x = Ucount * w1
+			y = 0
+			Ucount = Ucount + 1
+		end
+		--print(itemname,itemName)
+		local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonDButton"..itemname, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate");
+			DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
+			DarkmoonFlasksDButton:ClearAllPoints()
+			DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x+20, y+52)
+			DarkmoonFlasksDButton:SetSize(w, h)
+			DarkmoonFlasksDButton:SetNormalTexture(itemTexture)
+			DarkmoonFlasksDButton:SetPushedTexture(itemTexture)
+			DarkmoonFlasksDButton:SetHighlightTexture(itemTexture)
+			DarkmoonFlasksDButton:SetAttribute("type", "item")
+			DarkmoonFlasksDButton:SetAttribute("item",itemname)
+			--DarkmoonFlasksDButton:HookScript("OnMouseUp", function(self) 
+				--print(name)
+				--self:SetScale(1)
+				--print("what is this?")
+			--end)
+		local function OnEnter(self)
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			--local text = self.Count
+			--text:SetText(itemcount);
+			print("will this be visible?")
+			if itemLink then
+				GameTooltip:SetHyperlink(itemLink)
+			end
+			--GameTooltip:AddLine(itemcount)
+			GameTooltip:Show()
+		end
 
-					local function OnEnter(self)
-						GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-						--local text = self.Count
-						--text:SetText(itemcount);
-						print("will this be visible?")
-						if itemLink then
-							GameTooltip:SetHyperlink(itemLink)
-						end
-						--GameTooltip:AddLine(itemcount)
-						GameTooltip:Show()
-					end
-
-					local function OnLeave(self)
-						--print("onleave")
-						GameTooltip:Hide()
-					end
-					DarkmoonFlasksDButton:Hide()
-					DarkmoonFlasksDButton:SetScript("OnEnter", OnEnter)
-					DarkmoonFlasksDButton:SetScript("OnLeave", OnLeave)
-					_G["DarkmoonDButton"..itemname] = DarkmoonFlasksDButton
-				end
+		local function OnLeave(self)
+			--print("onleave")
+			GameTooltip:Hide()
+		end
+		DarkmoonFlasksDButton:Hide()
+		DarkmoonFlasksDButton:SetScript("OnEnter", OnEnter)
+		DarkmoonFlasksDButton:SetScript("OnLeave", OnLeave)
+		_G["DarkmoonDButton"..itemname] = DarkmoonFlasksDButton
+	end
 end
 
 local DarkmoonFlasksShowHideButtontooltipText
@@ -393,10 +396,10 @@ local flask_State = false
  local function toggle_showhide__state()
 	--print(flask_State)
 	if flask_State then
-		DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughrs and Tinctures." --Creates a tooltip on mouseover.
+		DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
 		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
 	else
-		DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughrs and Tinctures in your bags." --Creates a tooltip on mouseover.
+		DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 	end
 	flask_State = not flask_State
@@ -412,18 +415,18 @@ local function darkmoon_frame_update()
 		if frames_need then darkmoon_frame_create() end
 		darkmoon_reseter()
 		toggle_showhide__state()
-		--DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughrs and Tinctures." --Creates a tooltip on mouseover.
+		--DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
 		--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
 		--flask_State = true
 		for bag = 0, 4, 1 do 
 			for slot=1, GetContainerNumSlots(bag), 1 do 
-				local name = GetContainerItemLink(bag,slot)
+				local name = GetContainerItemLink(bag, slot)
 				if name and string.find(name,string0) then
 				--if name and string.find(name,"Hearthstone") then
 					local itemName, itemLink, _,_,_,_,_,_,_,_,_ = GetItemInfo(name)
-					local gotin=false
-					if string.find(name,string1) then gotin=true end
-					if string.find(name,string2) then gotin=true	end
+					local gotin = false
+					if string.find(name, string1) then gotin = true end
+					if string.find(name, string2) then gotin = true	end
 					if gotin then
 						--print("found",itemName)
 						--print(name,itemName)
@@ -436,13 +439,34 @@ local function darkmoon_frame_update()
 							--GameTooltip:AddLine(itemcount)
 							GameTooltip:Show()
 						end
-						local itemcount=GetItemCount(name,false,false)
-						local DarkmoonFlasksDButtonFS = something:CreateFontString("FontString","OVERLAY","GameTooltipText")
-						DarkmoonFlasksDButtonFS:SetPoint("BOTTOMRIGHT", something)
-						DarkmoonFlasksDButtonFS:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
-						--DarkmoonFlasksDButtonFS:SetShadowOffset(1, -1)--Optional
-						DarkmoonFlasksDButtonFS:SetTextColor(1, 1, 1);
-						DarkmoonFlasksDButtonFS:SetFormattedText("%.0f", itemcount)
+						local itemcount = GetItemCount(name, false, false)
+						print(name, itemcount)
+						local itemcount_bank = GetItemCount(name, true, false)
+						local DarkmoonFlasksDButtonFSD = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
+						--DarkmoonFlasksDButtonFSD:Hide()
+						--DarkmoonFlasksDButtonFSD:ClearAllPoints()
+						DarkmoonFlasksDButtonFSD:SetPoint("BOTTOMRIGHT", something)
+						DarkmoonFlasksDButtonFSD:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
+						--DarkmoonFlasksDButtonFSD:SetShadowOffset(1, -1)--Optional
+						DarkmoonFlasksDButtonFSD:SetTextColor(1, 1, 1);
+						DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
+						--DarkmoonFlasksDButtonFSD:Show()
+						--local DarkmoonFlasksDButtonFSD = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
+						--DarkmoonFlasksDButtonFSD:Hide()
+						--DarkmoonFlasksDButtonFSD:SetPoint("BOTTOMRIGHT", something)
+						--DarkmoonFlasksDButtonFSD:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
+						--DarkmoonFlasksDButtonFSD:SetShadowOffset(1, -1)--Optional
+						--DarkmoonFlasksDButtonFSD:SetTextColor(1, 1, 1);
+						--DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
+						--DarkmoonFlasksDButtonFSD:Show()
+						if itemcount ~= itemcount_bank then
+							local DarkmoonFlasksDButtonFSU = something:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
+							DarkmoonFlasksDButtonFSU:SetPoint("TOPRIGHT", something)
+							DarkmoonFlasksDButtonFSU:SetFont("Fonts\\FRIZQT__.TTF", 14, "THINOUTLINE")
+							--DarkmoonFlasksDButtonFSU:SetShadowOffset(1, -1)--Optional
+							DarkmoonFlasksDButtonFSU:SetTextColor(1, 1, 1);
+							DarkmoonFlasksDButtonFSU:SetFormattedText("%.0f", itemcount_bank)
+						end
 						something:SetScript("OnEnter", real_OnEnter)
 						something:Show()
 						_G["DarkmoonDButton"..itemName] = something
@@ -453,7 +477,8 @@ local function darkmoon_frame_update()
 	end
 end
 
-updater:RegisterEvent("LOOT_CLOSED")
+--updater:RegisterEvent("LOOT_CLOSED")
+updater:RegisterEvent("BAG_UPDATE")
 updater:SetScript("OnEvent", function(self, event,arg1)
 	darkmoon_frame_update()
 	if event == "PLAYER_REGEN_ENABLED" then self:UnregisterEvent(event) end
@@ -484,7 +509,7 @@ local DarkmoonFlasksShowHideButton = CreateFrame("Button", "DarkmoonFlasksShowHi
 DarkmoonFlasksShowHideButton:SetScript("OnEvent", function(self, event, arg1)
 	if arg1 == addonname then
 		toggle_showhide__state()
-		--DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughrs and Tinctures in your bags." --Creates a tooltip on mouseover.
+		--DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 		--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 	end
 end)
@@ -497,7 +522,7 @@ DarkmoonFlasksShowHideButton:SetScript("OnClick", function(self, button, up)
 		else
 			darkmoon_reseter()
 			toggle_showhide__state()
-			--DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughrs and Tinctures in your bags." --Creates a tooltip on mouseover.
+			--DarkmoonFlasksShowHideButtontooltipText = "Show buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
 			--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 			--flask_State = false
 			--print("Hide")
@@ -542,7 +567,7 @@ end)
 
 local function break_me()
 	--would be good to make more interesting way to generate error
-	print(format("%F","error"))
+	print(format("%F", "error"))
 end
 --DarkmoonFlasksBreakButton:HookScript("OnClick", break_me)
 DarkmoonFlasksBreakButton:HookScript("OnClick", reset_position)
