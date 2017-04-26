@@ -470,7 +470,8 @@ local function darkmoon_frame_update()
 end
 
 --updater:RegisterEvent("LOOT_CLOSED")
-updater:RegisterEvent("BAG_UPDATE")
+--updater:RegisterEvent("BAG_UPDATE")
+updater:RegisterEvent("BAG_UPDATE_DELAYED")
 updater:SetScript("OnEvent", function(self, event,arg1)
 	if flask_State then
 		change = false
