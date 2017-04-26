@@ -438,43 +438,33 @@ local function darkmoon_frame_update()
 		--DarkmoonFlasksShowHideButtontooltipText = "Hide buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
 		--_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Hide")
 		--flask_State = true
-		for bag = 0, 4, 1 do 
-			for slot=1, GetContainerNumSlots(bag), 1 do 
-				local name = GetContainerItemLink(bag, slot)
-				if name and string.find(name,string0) then
-				--if name and string.find(name,"Hearthstone") then
-					local itemName, itemLink, _,_,_,_,_,_,_,_,_ = GetItemInfo(name)
-					local gotin = false
-					if string.find(name, string1) then gotin = true end
-					if string.find(name, string2) then gotin = true	end
-					if gotin then
-						--print("found",itemName)
-						--print(name,itemName)
-						local something = _G["DarkmoonDButton"..itemName]
-						local function real_OnEnter(self)
-							--local itemcount=GetItemCount(name,false,false)
-							GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-							GameTooltip:SetHyperlink(itemLink)
-							--print("for some reason it gets printed")
-							--GameTooltip:AddLine(itemcount)
-							GameTooltip:Show()
-						end
-						local itemcount = GetItemCount(name, false, false)
-						--print(name, itemcount)
-						local itemcount_bank = GetItemCount(name, true, false)
-						something.DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
-						something.DarkmoonFlasksDButtonFSD:Show()
-						something.DarkmoonFlasksDButtonFSU:Hide()
-						if itemcount ~= itemcount_bank then
-							something.DarkmoonFlasksDButtonFSU:SetFormattedText("%.0f", itemcount_bank)
-							something.DarkmoonFlasksDButtonFSU:Show()
-						end
-						something:SetScript("OnEnter", real_OnEnter)
-						something:Show()
-						_G["DarkmoonDButton"..itemName] = something
-					end
+		for index = 1, numIte, 1 do
+			local itemname = itemset[index]
+			local _, itemLink = GetItemInfo(itemname)
+			if itemLink then -- on unseen items error
+				local something = _G["DarkmoonDButton"..itemname]
+				local function real_OnEnter(self)
+					--local itemcount=GetItemCount(name,false,false)
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+					GameTooltip:SetHyperlink(itemLink)
+					--print("for some reason it gets printed")
+					--GameTooltip:AddLine(itemcount)
+					GameTooltip:Show()
 				end
-			end 
+				local itemcount = GetItemCount(itemname, false, false)
+				--print(itemname, itemcount)
+				local itemcount_bank = GetItemCount(itemname, true, false)
+				something.DarkmoonFlasksDButtonFSD:SetFormattedText("%.0f", itemcount)
+				something.DarkmoonFlasksDButtonFSD:Show()
+				something.DarkmoonFlasksDButtonFSU:Hide()
+				if itemcount ~= itemcount_bank then
+					something.DarkmoonFlasksDButtonFSU:SetFormattedText("%.0f", itemcount_bank)
+					something.DarkmoonFlasksDButtonFSU:Show()
+				end
+				something:SetScript("OnEnter", real_OnEnter)
+				something:Show()
+				_G["DarkmoonDButton"..itemname] = something
+			end
 		end
 	end
 end
