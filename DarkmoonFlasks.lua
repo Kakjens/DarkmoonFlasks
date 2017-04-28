@@ -101,6 +101,7 @@ local y
 local function createOneButton(itemID)
 	local _, itemLink, _,_,_,_,_,_,_,itemTexture,_ = GetItemInfo(itemID)
 	--print("create",itemLink)
+	if not _G["DarkmoonFlasksDButton"..itemID] then
 	local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonFlasksDButton"..itemID, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate")
 	if stage[itemID] then y = h1 else y = 0 end
 	--x = (which[itemID] -1) * w1
@@ -134,6 +135,9 @@ local function createOneButton(itemID)
 		GameTooltip:Show()
 	end)
 	DarkmoonFlasksDButton:HookScript("OnLeave", GameTooltip_Hide)
+	--else
+	--	print(itemID)
+	end
 end
 
 local cache_writer = CreateFrame('Frame')
@@ -152,27 +156,6 @@ cache_writer:SetScript('OnEvent', function(self, event, ...)
 end)
 
 cache_writer:RegisterEvent('GET_ITEM_INFO_RECIEVED')
-
-local function createButtons()
-	local where_stage = true
-	--local temp = 1
-	for index = 1, numIte, 1 do
-		local itemID = itemset[index]
-		stage[itemID] = where_stage
-		where_stage = not where_stage
-		--which[itemID] = floor(index+temp)/2
-		which[itemID] = ceil(index/2)
-		--if temp == 1 then temp = 0 else temp = 1 end
-		local name = GetItemInfo(itemID)
-		if name then
-			createOneButton(itemID)
-		else
-			--add item to wait list
-			wait[itemID] = {}
-			
-		end
-	end
-end
 
 local function updateCount()
 	for index = 1, numIte, 1 do
@@ -203,15 +186,41 @@ local function updateCount()
 	end
 end
 
+local function createButtons()
+	local where_stage = true
+	--local temp = 1
+	for index = 1, numIte, 1 do
+		local itemID = itemset[index]
+		stage[itemID] = where_stage
+		where_stage = not where_stage
+		--which[itemID] = floor(index+temp)/2
+		which[itemID] = ceil(index/2)
+		--if temp == 1 then temp = 0 else temp = 1 end
+		local name = GetItemInfo(itemID)
+		if name then
+			createOneButton(itemID)
+		else
+			--add item to wait list
+			wait[itemID] = {}
+		end
+	end
+	updateCount()
+end
+
 local DarkmoonFlasksInitFrame = CreateFrame("Frame", "DarkmoonFlasksInitFrame", DarkmoonFlasksDragFrame)
 DarkmoonFlasksInitFrame:RegisterEvent("PLAYER_LOGIN")
 DarkmoonFlasksInitFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
-		createButtons()
-		--print("Darkmoon flasks init login")
-		updateCount()
-		--self:RegisterEvent("BAG_UPDATE")
-		self:RegisterEvent("BAG_UPDATE_DELAYED")
+	C_Timer.After(5, createButtons)
+	--for some reason looking up the items during login fixes non-creation of buttons
+	for index = 1, numIte, 1 do
+		local itemID = itemset[index]
+		local name = GetItemInfo(itemID)
+	end
+	updateCount()
+	--print("Darkmoon flasks init login")
+	--self:RegisterEvent("BAG_UPDATE")
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	end
 	--if event == "BAG_UPDATE" then
 	if event == "BAG_UPDATE_DELAYED" then
@@ -328,11 +337,18 @@ local function darkmoon_show()
 	for index =1, numIte, 1 do
 		local itemID = itemset[index]
 		--print(index,itemname,"loop")
+		if not _G["DarkmoonFlasksDButton"..itemID] then
+			--print("needed",itemID)
+			--createOneButton(itemID)
+			createButtons()
+			--if not _G["DarkmoonFlasksDButton"..itemID] then print("yay") end
+		end
 		local something = _G["DarkmoonFlasksDButton"..itemID]
 		--print(something)
 		something:Show()
 		_G["DarkmoonFlasksDButton"..itemID]=something
 	end
+	updateCount()
 end
 
 local updater = CreateFrame("Frame")
