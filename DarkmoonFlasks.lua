@@ -108,7 +108,7 @@ local function createOneButton(itemID)
 	--print(itemname,itemName)
 	DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
 	DarkmoonFlasksDButton:ClearAllPoints()
-	DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x+20, y+52)
+	DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x-20, y+52)
 	DarkmoonFlasksDButton:SetSize(w, h)
 	DarkmoonFlasksDButton:SetNormalTexture(itemTexture)
 	DarkmoonFlasksDButton:SetPushedTexture(itemTexture)
@@ -161,7 +161,7 @@ local function createButtons()
 		stage[itemID] = where_stage
 		where_stage = not where_stage
 		--which[itemID] = floor(index+temp)/2
-		which[itemID] = floor(index/2)
+		which[itemID] = ceil(index/2)
 		--if temp == 1 then temp = 0 else temp = 1 end
 		local name = GetItemInfo(itemID)
 		if name then
