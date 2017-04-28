@@ -100,15 +100,17 @@ local y
 
 local function createOneButton(itemID)
 	local _, itemLink, _,_,_,_,_,_,_,itemTexture,_ = GetItemInfo(itemID)
-	--print("create",itemLink)
-	local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonFlasksDButton"..itemID, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate")
-	if stage[itemID] then y = h1 else y = 0 end
-	--x = (which[itemID] -1) * w1
-	x = (which[itemID]) * w1
+	print("create",itemLink)
+	if not _G["DarkmoonFlasksDButton"..itemID] then
+		local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonFlasksDButton"..itemID, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate")
+		if stage[itemID] then y = h1 else y = 0 end
+		--x = (which[itemID] -1) * w1
+		x = (which[itemID]) * w1
 	--print(itemname,itemName)
 	DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
 	DarkmoonFlasksDButton:ClearAllPoints()
-	DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x+20, y+52)
+	--DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x+20, y+52)
+	DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x-20, y+52)
 	DarkmoonFlasksDButton:SetSize(w, h)
 	DarkmoonFlasksDButton:SetNormalTexture(itemTexture)
 	DarkmoonFlasksDButton:SetPushedTexture(itemTexture)
@@ -134,6 +136,9 @@ local function createOneButton(itemID)
 		GameTooltip:Show()
 	end)
 	DarkmoonFlasksDButton:HookScript("OnLeave", GameTooltip_Hide)
+	else
+		print("wtf")
+	end
 end
 
 local cache_writer = CreateFrame('Frame')
@@ -144,7 +149,7 @@ cache_writer:SetScript('OnEvent', function(self, event, ...)
 		-- the info is now downloaded and cached
 		local itemID = ...
 		if wait[itemID] then
-			--print(itemID,"received")
+			print(itemID,"received")
 			createOneButton(itemID)
 			wait[itemID] = nil
 		end
@@ -161,7 +166,7 @@ local function createButtons()
 		stage[itemID] = where_stage
 		where_stage = not where_stage
 		--which[itemID] = floor(index+temp)/2
-		which[itemID] = floor(index/2)
+		which[itemID] = ceil(index/2)
 		--if temp == 1 then temp = 0 else temp = 1 end
 		local name = GetItemInfo(itemID)
 		if name then
@@ -169,7 +174,6 @@ local function createButtons()
 		else
 			--add item to wait list
 			wait[itemID] = {}
-			
 		end
 	end
 end
@@ -180,7 +184,8 @@ local function updateCount()
 		--local _, itemLink = GetItemInfo(itemID)
 		--print(itemLink)
 		--if itemLink then -- on unseen items error
-		if _G["DarkmoonFlasksDButton"..itemID] then
+		if not _G["DarkmoonFlasksDButton"..itemID] then createOneButton(itemID) else print("good on update") end
+		--if _G["DarkmoonFlasksDButton"..itemID] then
 			local something = _G["DarkmoonFlasksDButton"..itemID]
 			local itemcount = GetItemCount(itemID, false, false)
 			--print(itemID, itemcount)
@@ -199,7 +204,7 @@ local function updateCount()
 				something:GetNormalTexture():SetDesaturated(false);
 			end
 			_G["DarkmoonFlasksDButton"..itemID] = something
-		end
+		--end
 	end
 end
 
@@ -209,7 +214,7 @@ DarkmoonFlasksInitFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		createButtons()
 		--print("Darkmoon flasks init login")
-		updateCount()
+		--updateCount()
 		--self:RegisterEvent("BAG_UPDATE")
 		self:RegisterEvent("BAG_UPDATE_DELAYED")
 	end
@@ -310,7 +315,7 @@ local function toggle_showhide_state()
 end
 
 local function darkmoon_hide()
-	--print("reseting frames")
+	print("reseting frames")
 	--pairs don't preserve order
 	for index =1, numIte, 1 do
 		local itemID = itemset[index]
@@ -323,11 +328,12 @@ local function darkmoon_hide()
 end
 
 local function darkmoon_show()
-	--print("showing frames")
+	print("showing frames")
 	--pairs don't preserve order
 	for index =1, numIte, 1 do
 		local itemID = itemset[index]
-		--print(index,itemname,"loop")
+		--print(index,itemID,"loop")
+		if not _G["DarkmoonFlasksDButton"..itemID] then createOneButton(itemID) else print("good on show") end
 		local something = _G["DarkmoonFlasksDButton"..itemID]
 		--print(something)
 		something:Show()
