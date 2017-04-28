@@ -6,22 +6,22 @@
 	--itemIDs for potions
 local darkmoonflasks = {}
 darkmoonflasks = {
-[1] = 124642, --"Darkmoon Draught of Supremacy",
-[2] = 124659, --"Darkmoon Tincture of Supremacy",
-[3] = 124646, --"Darkmoon Draught of Flexibility",
-[4] = 124658, --"Darkmoon Tincture of Flexibility",
-[5] = 124645, --"Darkmoon Draught of Precision",
-[6] = 124657, --"Darkmoon Tincture of Precision",
-[7] = 124648, --"Darkmoon Draught of Divergence",
-[8] = 124655, --"Darkmoon Tincture of Divergence",
-[9] = 124647, --"Darkmoon Draught of Alacrity",
-[10] = 124656, --"Darkmoon Tincture of Alacrity",
-[11] = 124650, --"Darkmoon Draught of Deftness",
-[12] = 124653, --"Darkmoon Tincture of Deftness",
-[13] = 124651, --"Darkmoon Draught of Deflection",
-[14] = 124652, --"Darkmoon Tincture of Deflection",
-[15] = 124649, --"Darkmoon Draught of Defense",
-[16] = 124654, --"Darkmoon Tincture of Defense",
+	[1] = 124642, --"Darkmoon Draught of Supremacy",
+	[2] = 124659, --"Darkmoon Tincture of Supremacy",
+	[3] = 124646, --"Darkmoon Draught of Flexibility",
+	[4] = 124658, --"Darkmoon Tincture of Flexibility",
+	[5] = 124645, --"Darkmoon Draught of Precision",
+	[6] = 124657, --"Darkmoon Tincture of Precision",
+	[7] = 124648, --"Darkmoon Draught of Divergence",
+	[8] = 124655, --"Darkmoon Tincture of Divergence",
+	[9] = 124647, --"Darkmoon Draught of Alacrity",
+	[10] = 124656, --"Darkmoon Tincture of Alacrity",
+	[11] = 124650, --"Darkmoon Draught of Deftness",
+	[12] = 124653, --"Darkmoon Tincture of Deftness",
+	[13] = 124651, --"Darkmoon Draught of Deflection",
+	[14] = 124652, --"Darkmoon Tincture of Deflection",
+	[15] = 124649, --"Darkmoon Draught of Defense",
+	[16] = 124654, --"Darkmoon Tincture of Defense",
 }
 
 local potions = {}
@@ -103,7 +103,8 @@ local function createOneButton(itemID)
 	--print("create",itemLink)
 	local DarkmoonFlasksDButton = CreateFrame("Button", "DarkmoonFlasksDButton"..itemID, DarkmoonFlasksDragFrame, "SecureActionButtonTemplate")
 	if stage[itemID] then y = h1 else y = 0 end
-	x = (which[itemID] -1) * w1
+	--x = (which[itemID] -1) * w1
+	x = (which[itemID]) * w1
 	--print(itemname,itemName)
 	DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
 	DarkmoonFlasksDButton:ClearAllPoints()
@@ -143,7 +144,7 @@ cache_writer:SetScript('OnEvent', function(self, event, ...)
 		-- the info is now downloaded and cached
 		local itemID = ...
 		if wait[itemID] then
-			print(itemID,"received")
+			--print(itemID,"received")
 			createOneButton(itemID)
 			wait[itemID] = nil
 		end
@@ -154,13 +155,14 @@ cache_writer:RegisterEvent('GET_ITEM_INFO_RECIEVED')
 
 local function createButtons()
 	local where_stage = true
-	local temp = 1
+	--local temp = 1
 	for index = 1, numIte, 1 do
 		local itemID = itemset[index]
 		stage[itemID] = where_stage
 		where_stage = not where_stage
-		which[itemID] = floor(index+temp)/2
-		if temp == 1 then temp = 0 else temp = 1 end
+		--which[itemID] = floor(index+temp)/2
+		which[itemID] = floor(index/2)
+		--if temp == 1 then temp = 0 else temp = 1 end
 		local name = GetItemInfo(itemID)
 		if name then
 			createOneButton(itemID)
@@ -175,9 +177,10 @@ end
 local function updateCount()
 	for index = 1, numIte, 1 do
 		local itemID = itemset[index]
-		local _, itemLink = GetItemInfo(itemID)
+		--local _, itemLink = GetItemInfo(itemID)
 		--print(itemLink)
-		if itemLink then -- on unseen items error
+		--if itemLink then -- on unseen items error
+		if _G["DarkmoonFlasksDButton"..itemID] then
 			local something = _G["DarkmoonFlasksDButton"..itemID]
 			local itemcount = GetItemCount(itemID, false, false)
 			--print(itemID, itemcount)
