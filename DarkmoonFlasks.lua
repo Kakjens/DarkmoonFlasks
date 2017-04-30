@@ -135,8 +135,8 @@ local function createOneButton(itemID)
 		GameTooltip:Show()
 	end)
 	DarkmoonFlasksDButton:HookScript("OnLeave", GameTooltip_Hide)
-	--else
-	--	print(itemID)
+	else
+		--print("trying to recreate",itemID)
 	end
 end
 
@@ -187,15 +187,8 @@ local function updateCount()
 end
 
 local function createButtons()
-	local where_stage = true
-	--local temp = 1
 	for index = 1, numIte, 1 do
 		local itemID = itemset[index]
-		stage[itemID] = where_stage
-		where_stage = not where_stage
-		--which[itemID] = floor(index+temp)/2
-		which[itemID] = ceil(index/2)
-		--if temp == 1 then temp = 0 else temp = 1 end
 		local name = GetItemInfo(itemID)
 		if name then
 			createOneButton(itemID)
@@ -211,16 +204,21 @@ local DarkmoonFlasksInitFrame = CreateFrame("Frame", "DarkmoonFlasksInitFrame", 
 DarkmoonFlasksInitFrame:RegisterEvent("PLAYER_LOGIN")
 DarkmoonFlasksInitFrame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
-	C_Timer.After(5, createButtons)
-	--for some reason looking up the items during login fixes non-creation of buttons
-	for index = 1, numIte, 1 do
-		local itemID = itemset[index]
-		local name = GetItemInfo(itemID)
-	end
-	updateCount()
-	--print("Darkmoon flasks init login")
-	--self:RegisterEvent("BAG_UPDATE")
-	self:RegisterEvent("BAG_UPDATE_DELAYED")
+		local where_stage = true
+		for index = 1, numIte, 1 do
+			local itemID = itemset[index]
+			local name = GetItemInfo(itemID)
+			stage[itemID] = where_stage
+			where_stage = not where_stage
+			--which[itemID] = floor(index+temp)/2
+			which[itemID] = ceil(index/2)
+		end
+		C_Timer.After(5, createButtons)
+		--for some reason looking up the items during login fixes non-creation of buttons
+		--updateCount()
+		--print("Darkmoon flasks init login")
+		--self:RegisterEvent("BAG_UPDATE")
+		self:RegisterEvent("BAG_UPDATE_DELAYED")
 	end
 	--if event == "BAG_UPDATE" then
 	if event == "BAG_UPDATE_DELAYED" then
@@ -339,8 +337,8 @@ local function darkmoon_show()
 		--print(index,itemname,"loop")
 		if not _G["DarkmoonFlasksDButton"..itemID] then
 			--print("needed",itemID)
-			--createOneButton(itemID)
-			createButtons()
+			createOneButton(itemID)
+			--createButtons()
 			--if not _G["DarkmoonFlasksDButton"..itemID] then print("yay") end
 		end
 		local something = _G["DarkmoonFlasksDButton"..itemID]
