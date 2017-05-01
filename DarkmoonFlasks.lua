@@ -69,9 +69,6 @@ local function reset_position_reload()
 	ReloadUI();
 end
 
-
-			--local hide_if_none_at_bag = true
-			--local but_show_if_there_are_in_bank = true
 local private = {}
 private.defaults = {}
 private.defaults.DarkmoonFlasksCheckboxes = {
@@ -107,7 +104,7 @@ loader:RegisterEvent("ADDON_LOADED")
 
 
 if false then
---Open Categaories Fix
+--Open Categaories Fix --why it's needed, let it  remain just in case
 do
 	local function get_panel_name(panel)
 		local tp = type(panel)
@@ -174,10 +171,7 @@ do
 
 	hooksecurefunc("InterfaceOptionsFrame_OpenToCategory", InterfaceOptionsFrame_OpenToCategory_Fix)
 end
-	
 end
-	
-	
 	
 local DarkmoonFlasks
 DarkmoonFlasks = {};
@@ -360,13 +354,23 @@ local DarkmoonFlasksHideCheck = CreateFrame("CheckButton", "DarkmoonFlasksHideCh
 	DarkmoonFlasksHideCheck:SetScript("OnEvent", function(self, button, up)
 		local checked = private.db.DarkmoonFlasksCheckboxes.hide_if_none_at_bag
 		self:SetChecked(checked)
-		private.db.DarkmoonFlasksCheckboxes.hide_if_none_at_bag = checked
+		--private.db.DarkmoonFlasksCheckboxes.hide_if_none_at_bag = checked --???
 	end)
 
 	DarkmoonFlasksHideCheck:SetScript("OnClick", function(self, button, up)
-		private.db.DarkmoonFlasksCheckboxes.hide_if_none_at_bag = self:GetChecked()
-		updateCount()
+		local checked = self:GetChecked()
+		if InCombatLockdown() then
+			print("Can't chenge during combat")
+			self:SetChecked(not state)
+		else
+			private.db.DarkmoonFlasksCheckboxes.hide_if_none_at_bag = checked
+			updateCount()
+		end
 	end)
+		
+		
+
+
 	
 local DarkmoonFlasksShowCheck = CreateFrame("CheckButton", "DarkmoonFlasksShowCheck", DarkmoonFlasksPanel, "InterfaceOptionsCheckButtonTemplate")
 	DarkmoonFlasksShowCheck:RegisterEvent("ADDON_LOADED")
@@ -379,15 +383,23 @@ local DarkmoonFlasksShowCheck = CreateFrame("CheckButton", "DarkmoonFlasksShowCh
 	DarkmoonFlasksShowCheck:SetScript("OnEvent", function(self, button, up)
 		local checked = private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank
 		self:SetChecked(checked)
-		private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank = checked
+		--private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank = checked --???
 	end)
 
 	DarkmoonFlasksShowCheck:SetScript("OnClick", function(self, button, up)
-		private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank = self:GetChecked()
-		updateCount()
+		local checked = self:GetChecked()
+		if InCombatLockdown() then
+			print("Can't chenge during combat")
+			self:SetChecked(not state)
+		else
+			private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank = checked
+			updateCount()
+		end
+	
+		--private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank = self:GetChecked() --previous version
+		--updateCount() --previous version
 	end)	
 	
-
 local DarkmoonFlasksShowHide = CreateFrame("CheckButton", "DarkmoonFlasksShowHide", DarkmoonFlasksPanel, "InterfaceOptionsCheckButtonTemplate")
 	DarkmoonFlasksShowHide:RegisterEvent("ADDON_LOADED")
 	DarkmoonFlasksShowHide:ClearAllPoints()
@@ -396,11 +408,12 @@ local DarkmoonFlasksShowHide = CreateFrame("CheckButton", "DarkmoonFlasksShowHid
 	_G[DarkmoonFlasksShowHide:GetName() .. "Text"]:SetText("Toggle for displaying and hiding DarkmoonFlasks frame")
 	DarkmoonFlasksShowHide.tooltipText = 'Checked shows DarkmoonFlasks. Unchecked hides DarkmoonFlasks.' --Creates a tooltip on mouseover.
 	
-	DarkmoonFlasksShowHide:SetScript("OnEvent", function(self, button, up)
-		local checked = private.db.DarkmoonFlasksCheckboxes.frame_visible
-		self:SetChecked(checked)
-		private.db.DarkmoonFlasksCheckboxes.frame_visible = checked
-		if checked then
+	local function setframevisibility(state)
+	if InCombatLockdown() then
+		print("Can't chenge during combat")
+		DarkmoonFlasksShowHide:SetChecked(not state)
+	else
+		if state then
 			--DarkmoonFlasksDragFrame:Hide()
 			DarkmoonFlasksDragFrame:Show()
 			--DarkmoonFlasksShowHideButton:Show()
@@ -409,28 +422,30 @@ local DarkmoonFlasksShowHide = CreateFrame("CheckButton", "DarkmoonFlasksShowHid
 			DarkmoonFlasksDragFrame:Hide()
 			--DarkmoonFlasksShowHideButton:Hide()
 		end
+	end
+end
+	
+	
+	
+	
+	DarkmoonFlasksShowHide:SetScript("OnEvent", function(self, button, up)
+		local checked = private.db.DarkmoonFlasksCheckboxes.frame_visible
+		self:SetChecked(checked)
+		setframevisibility(checked)
 	end)
 	
 	DarkmoonFlasksShowHide:SetScript("OnClick", function(self, button, up)
 		local checked = self:GetChecked()
 		private.db.DarkmoonFlasksCheckboxes.frame_visible = checked
-		if checked then
-			--DarkmoonFlasksDragFrame:Hide()
-			DarkmoonFlasksDragFrame:Show()
-			--DarkmoonFlasksShowHideButton:Show()
-		else
-			--DarkmoonFlasksDragFrame:Show()
-			DarkmoonFlasksDragFrame:Hide()
-			--DarkmoonFlasksShowHideButton:Hide()
-		end
+		setframevisibility(checked)
 	end)	
 
-
+	
 local wait = {}
 
 local cache_writer = CreateFrame('Frame')
 cache_writer:SetScript('OnEvent', function(self, event, ...)
-	if event == 'GET_ITEM_INFO_RECIEVED' then
+	if event == 'GET_ITEM_INFO_RECEIVED' then
 		-- the info is now downloaded and cached
 		local itemID = ...
 		if wait[itemID] then
@@ -440,7 +455,7 @@ cache_writer:SetScript('OnEvent', function(self, event, ...)
 		end
 	end
 end)
-cache_writer:RegisterEvent('GET_ITEM_INFO_RECIEVED')
+cache_writer:RegisterEvent('GET_ITEM_INFO_RECEIVED')
 
 local function createButtons()
 	for index = 1, numIte, 1 do
