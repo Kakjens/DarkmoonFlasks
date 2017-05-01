@@ -56,7 +56,7 @@ potions = {
 
 local itemset = {}
 local what_to_do = "Darkmoon"
---local what_to_do = "Potions" -- not updated yet
+--local what_to_do = "Potions"
 if (what_to_do == "Darkmoon") then
 	itemset = darkmoonflasks
 else
@@ -95,7 +95,7 @@ private.db.DarkmoonFlasksCheckboxes = {}
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("ADDON_LOADED")
 	loader:SetScript("OnEvent", function(self, event, arg1)
-		if event == "ADDON_LOADED" and arg1 == "DejaCharacterStats" then
+		if event == "ADDON_LOADED" and arg1 == addonname then
 			local function initDB(db, defaults)
 				if type(db) ~= "table" then db = {} end
 				if type(defaults) ~= "table" then return db end
@@ -230,11 +230,18 @@ local DarkmoonFlasksDresetcheck = CreateFrame("Button", "DarkmoonFlasksDResetBut
 		reset_position_reload()
 end)
 
+local w = 36
+local w1 = w * 1.1
+local h = 36
+local h1 = h * 1.1
+local x
+local y
+
 local DarkmoonFlasksDragFrame = CreateFrame("Frame", "DarkmoonFlasksDragFrame", UIParent)
 DarkmoonFlasksDragFrame:ClearAllPoints()
 DarkmoonFlasksDragFrame:SetPoint("CENTER", 0, 0)
 DarkmoonFlasksDragFrame:SetScale(1)
-DarkmoonFlasksDragFrame:SetWidth(350)
+DarkmoonFlasksDragFrame:SetWidth(floor(w1*numIte/2+17))
 DarkmoonFlasksDragFrame:SetHeight(150)
 DarkmoonFlasksDragFrame:Show()
 --Basic draggable frames
@@ -249,17 +256,10 @@ local texture=DarkmoonFlasksDragFrame:CreateTexture(nil,"ARTWORK")
 texture:SetAllPoints(DarkmoonFlasksDragFrame)
 texture:SetColorTexture(0, 0.75, 1, 0.7)
 
-local w = 36
-local w1 = w * 1.1
-local h = 36
-local h1 = h * 1.1
-local x
-local y
-
 local button_Count = 0
 
 local function createOneButton(itemID)
-	local _, itemLink, _,_,_,_,_,_,_,itemTexture,_ = GetItemInfo(itemID)
+	local name, itemLink, _,_,_,_,_,_,_,itemTexture,_ = GetItemInfo(itemID)
 	--print("create",itemLink)
 	if not _G["DarkmoonFlasksDButton"..itemID] then
 	button_Count = button_Count + 1
@@ -270,13 +270,13 @@ local function createOneButton(itemID)
 	--print(itemname,itemName)
 	DarkmoonFlasksDButton:RegisterForClicks("AnyUp")
 	DarkmoonFlasksDButton:ClearAllPoints()
-	DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x-20, y+52)
+	DarkmoonFlasksDButton:SetPoint("BOTTOMLEFT", x-30, y+52)
 	DarkmoonFlasksDButton:SetSize(w, h)
 	DarkmoonFlasksDButton:SetNormalTexture(itemTexture)
 	DarkmoonFlasksDButton:SetPushedTexture(itemTexture)
 	DarkmoonFlasksDButton:SetHighlightTexture(itemTexture)
 	DarkmoonFlasksDButton:SetAttribute("type", "item")
-	DarkmoonFlasksDButton:SetAttribute("item",itemID)
+	DarkmoonFlasksDButton:SetAttribute("item",name)
 	
 	DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSD = DarkmoonFlasksDButton:CreateFontString("FontString", "OVERLAY", "GameTooltipText")
 	DarkmoonFlasksDButton.DarkmoonFlasksDButtonFSD:SetPoint("BOTTOMRIGHT", DarkmoonFlasksDButton)
@@ -301,9 +301,15 @@ local function createOneButton(itemID)
 	end
 end
 
+local warning = true
+local updater1 = CreateFrame("Frame")
+
 local flask_State
 
 local function updateCount()
+	if InCombatLockdown() then
+		updater1:RegisterEvent("PLAYER_REGEN_ENABLED")
+	else
 	if button_Count == numIte then --is this check needed?
 		--print("flask state", flask_State)
 		if flask_State then
@@ -322,14 +328,16 @@ local function updateCount()
 					something.DarkmoonFlasksDButtonFSU:SetFormattedText("%.0f", itemcount_bank)
 					something.DarkmoonFlasksDButtonFSU:Show()
 				end
-				something:Show()
+				if not InCombatLockdown() then
+					something:Show()
+					if hide_if_none_at_bag then
+						if itemcount == 0 then something:Hide() end
+					end
+				end
 				if itemcount_bank == 0 then
 					something:GetNormalTexture():SetDesaturated(true);
 				else
 					something:GetNormalTexture():SetDesaturated(false);
-				end
-				if hide_if_none_at_bag then
-					if itemcount == 0 then something:Hide() end
 				end
 				if but_show_if_there_are_in_bank then
 					if itemcount_bank > 0 then something:Show() end
@@ -353,7 +361,16 @@ local function updateCount()
 			end
 		end
 	end
+	end
 end
+
+updater1:SetScript("OnEvent", function(self, event,arg1)
+	if event == "PLAYER_REGEN_ENABLED" then
+		warning = true
+		updateCount()
+		self:UnregisterEvent(event)
+	end
+end)				
 
 local DarkmoonFlasksHideCheck = CreateFrame("CheckButton", "DarkmoonFlasksHideCheck", DarkmoonFlasksPanel, "InterfaceOptionsCheckButtonTemplate")
 	DarkmoonFlasksHideCheck:RegisterEvent("ADDON_LOADED")
@@ -390,7 +407,7 @@ local DarkmoonFlasksShowCheck = CreateFrame("CheckButton", "DarkmoonFlasksShowCh
 	DarkmoonFlasksShowCheck:SetPoint("TOPLEFT", 40, -80)
 	DarkmoonFlasksShowCheck:SetScale(1.25)
 	_G[DarkmoonFlasksShowCheck:GetName() .. "Text"]:SetText("But display icon for Darkmoon elixir if it's in bank")
-	DarkmoonFlasksShowCheck.tooltipText = 'Checked displays icons for Darkmoon elixirs which are in bag or bank. Unchecked does nothing.' --Creates a tooltip on mouseover.
+	DarkmoonFlasksShowCheck.tooltipText = 'Checked displays icons for Darkmoon elixirs which are in bag or bank. Unchecked does nothing. Or not.' --Creates a tooltip on mouseover.
 	
 	DarkmoonFlasksShowCheck:SetScript("OnEvent", function(self, button, up)
 		local checked = private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank
@@ -401,7 +418,10 @@ local DarkmoonFlasksShowCheck = CreateFrame("CheckButton", "DarkmoonFlasksShowCh
 	DarkmoonFlasksShowCheck:SetScript("OnClick", function(self, button, up)
 		local checked = self:GetChecked()
 		if InCombatLockdown() then
-			print("Can't chenge during combat")
+			if warning then
+				warning = false
+				print("Can't chenge during combat")
+			end
 			self:SetChecked(not state)
 		else
 			private.db.DarkmoonFlasksCheckboxes.but_show_if_there_are_in_bank = checked
@@ -420,9 +440,12 @@ local DarkmoonFlasksShowHide = CreateFrame("CheckButton", "DarkmoonFlasksShowHid
 	_G[DarkmoonFlasksShowHide:GetName() .. "Text"]:SetText("Toggle for displaying and hiding DarkmoonFlasks frame")
 	DarkmoonFlasksShowHide.tooltipText = 'Checked shows DarkmoonFlasks. Unchecked hides DarkmoonFlasks.' --Creates a tooltip on mouseover.
 	
-	local function setframevisibility(state)
+local function setframevisibility(state)
 	if InCombatLockdown() then
-		print("Can't chenge during combat")
+		if warning then
+			warning = false
+			print("Can't chenge during combat")
+		end
 		DarkmoonFlasksShowHide:SetChecked(not state)
 	else
 		if state then
@@ -662,7 +685,7 @@ end)
 local DarkmoonFlasksShowHideButton = CreateFrame("Button", "DarkmoonFlasksShowHideButton", DarkmoonFlasksDragFrame, "UIPanelButtonTemplate")
 DarkmoonFlasksShowHideButton:RegisterEvent("ADDON_LOADED")
 DarkmoonFlasksShowHideButton:ClearAllPoints()
-DarkmoonFlasksShowHideButton:SetPoint("BOTTOMLEFT", DarkmoonFlasksDragFrame, "BOTTOMLEFT", 20, 20)
+DarkmoonFlasksShowHideButton:SetPoint("BOTTOMLEFT", DarkmoonFlasksDragFrame, "BOTTOMLEFT", 20, 12)
 DarkmoonFlasksShowHideButton:SetScale(1)
 DarkmoonFlasksShowHideButton:SetWidth(125)
 DarkmoonFlasksShowHideButton:SetHeight(30)
@@ -694,7 +717,8 @@ local function DarkmoonFlasksBreakButton_OnLeave(self)
 local DarkmoonFlasksBreakButton = CreateFrame("Button", "DarkmoonFlasksBreakButton", DarkmoonFlasksDragFrame, "UIPanelButtonTemplate")
 DarkmoonFlasksBreakButton:RegisterEvent("ADDON_LOADED")
 DarkmoonFlasksBreakButton:ClearAllPoints()
-DarkmoonFlasksBreakButton:SetPoint("BOTTOMLEFT", DarkmoonFlasksDragFrame, "BOTTOMLEFT", 200, 20)
+--DarkmoonFlasksBreakButton:SetPoint("BOTTOMLEFT", DarkmoonFlasksDragFrame, "BOTTOMLEFT", 200, 15)
+DarkmoonFlasksBreakButton:SetPoint("BOTTOMLEFT", DarkmoonFlasksDragFrame, "BOTTOMRIGHT", -145, 12)
 DarkmoonFlasksBreakButton:SetScale(1)
 DarkmoonFlasksBreakButton:SetWidth(125)
 DarkmoonFlasksBreakButton:SetHeight(30)
