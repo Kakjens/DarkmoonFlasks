@@ -601,7 +601,7 @@ local DarkmoonFlasksShowHideButtontooltipText
 
 local function set_showhide_state(state)
 	if state then
-		DarkmoonFlasksShowHideButtontooltipText = "Shows buttons for Darkmoon Draughts and Tinctures in your bags." --Creates a tooltip on mouseover.
+		DarkmoonFlasksShowHideButtontooltipText = "Shows buttons for Darkmoon Draughts and Tinctures in your bags. For available ways of displaying of items check Interface Options" --Creates a tooltip on mouseover.
 		_G[DarkmoonFlasksShowHideButton:GetName() .. "Text"]:SetText("Show")
 	else
 		DarkmoonFlasksShowHideButtontooltipText = "Hides buttons for Darkmoon Draughts and Tinctures." --Creates a tooltip on mouseover.
